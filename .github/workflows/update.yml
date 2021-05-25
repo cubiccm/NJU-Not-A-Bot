@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Update
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -29,7 +29,9 @@ jobs:
         run: python3 electricity/elec-monitor.py --room=${{ secrets.ELEC_ROOM }} --key=${{ secrets.EAISESS }}
       
       - name: Check campus card
-        run: python3 balance/balance.py --recharge-parameter=${{ secrets.CARD_RECHARGE }} --key=${{ secrets.EAISESS }} 
+        env:
+          TZ: "Asia/Hong_Kong"
+        run: _TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }} _TG_CHAT_ID=${{ secrets.TG_CHAT_ID }} python3 balance/balance.py --recharge-parameter=${{ secrets.CARD_RECHARGE }} --key=${{ secrets.EAISESS }} 
       
       - name: Commit files
         run: |

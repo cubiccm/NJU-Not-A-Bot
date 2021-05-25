@@ -34,6 +34,14 @@
 
 电量成功获取后会记录到 `data.csv` 中。
 
+### 连接 Telegram
+
+需要设置 `TG_BOT_TOKEN` 和 `TG_CHAT_ID` 两项参数。连接 Telegram 后，将可自动发消息到指定的 Telegram 账号。
+
+要在 Telegram 接收信息，需要拥有 Telegram 账号并在 [BotFather](https://t.me/botfather) 处注册一个 [Bot](https://core.telegram.org/bots)。这个机器人将用于向 Telegram 账号发送信息。之后，将获得的 Bot token 填入 Repo 参数 `TG_BOT_TOKEN`，并将你的（需要接收消息的）账号ID填入 `TG_CHAT_ID`。
+
+注意，账号ID不是注册用户名或注册手机号，而是一个唯一数字ID。可以和 [Chat ID Echo](https://t.me/chatid_echo_bot) 对话或和自己的机器人对话以获取这个ID。
+
 ## 本地执行用法
 
 ### 环境
@@ -71,6 +79,9 @@ python electricity/elec-monitor.py --room=[[area-id]],[[build-id]],[[room-id]] -
 python electricity/elec-graph.py
 ```
 
+### 连接 Telegram
+设置环境变量：`_TG_BOT_TOKEN` 及 `_TG_CHAT_ID` 即可自动发消息至 Telegram。
+
 ## TO-DO
 - [ ] 使用账号和密码自动登录信息门户
 - [ ] 自动充值
@@ -79,5 +90,6 @@ python electricity/elec-graph.py
   - [ ] 网费
 - [ ] 图书自动续借
 - [ ] 基于 Telegram / 邮件 的消息提醒
-  - [ ] 低余额 / 充值成功信息
+  - [x] 充值成功信息
+  - [ ] 费用低提醒
   - [ ] 体育打卡数量提醒
