@@ -2,47 +2,81 @@
 
 南京大学“i南大”信息门户自动化工具，基于 GitHub Actions。
 
-目前支持收集宿舍用电情况并绘制图表。
+目前支持校园卡余额查询及充值，以及收集宿舍用电情况并绘制图表。
 
-## 用法
+## 借助 GitHub Actions 实现自动化
+
+借助 GitHub Actions 可以为校园卡自动充值、自动化记录电量并更新至 `electricity/data.csv`。设置的运行频率为每十分钟一次，但实际运行频率可能会更低；亦可在 Action 界面手动执行。
+
+在执行 Actions 前需要先在 Repo 设定中设置执行参数。在 Repo 的 `Settings -> Secrets` 中添加 Repository Secrets，并按下方说明设置名称和值即可。
+
+### EAI-SESS 参数
+
+几乎所有操作都需要设定 `EAISESS`，未设定该项时 GitHub Actions 将会执行失败。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到，如 `gks2bdj093zfidj91cidkofkw6`。
+
+### 校园卡充值
+
+如需校园卡自动充值，还需要设定 `CARD_RECHARGE` 充值参数为 `[[recharge-threshold]],[[recharge-amount]],[[payment-password]]`。
+
+其中，`recharge-threshold` 为最小充值阈值，即当校园卡余额小于等于这个阈值时，才会执行充值操作。`recharge-amount` 为充值金额，由于信息门户限制，可能只能充值整数金额。`payment-password` 为在线支付密码，即信息门户充值操作所需要的密码。充值操作会从信息门户绑定银行卡中扣除金额。这三个参数以逗号分隔。
+
+例如，`50,50,pasSwoddd` 代表校园卡余额不高于 50CNY 时，会自动充值 50CNY 到卡内，最后一项为在线支付密码。
+
+*如果在线支付密码中含有 `,`，不需要进行转义，直接输入即可。如果不指定任何充值信息，将仅查询校园卡余额。*
+
+### 记录房间电量
+
+如需使用电量查询及自动记录，还需要设定 `ELEC_ROOM` 房间参数为 `[[area-id]],[[build-id]],[[room-id]]`。
+
+其中，`area-id`、`build-id`、`room_id` 可以在缴费页链接中提取，分别代表校区（鼓楼：`01`，仙林：`02`）、楼栋（如 `gl01` / `xl01`）及房间号（如 `101` / `A301` / `3081`）。
+
+例如，`area-id` 为 `02`（仙林校区），`build-id` 为 `xl01`，`room_id` 为 `A101`，则该参数为 `02,xl01,A101`。
+
+电量成功获取后会记录到 `data.csv` 中。
+
+## 本地执行用法
 
 ### 环境
 
-需要安装 Python 3 并通过
+需要安装 Python 3 并在终端执行
 
 ``` shell
 pip install -r requirements.txt
 ```
 
-安装必要的依赖环境。
+以安装必要的依赖环境。
 
-### 记录电量
+### EAI-SESS 参数
+
+几乎所有需要访问账号信息的操作都需要指定 `eai-sess` 参数。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到。
+
+### 校园卡充值
 
 ``` shell
-python electricity/elec-monitor.py --room=[[area-id]],[[build_id]],[[room-id]] --key=[[eai-sess]]
+python balance/balance.py --recharge-parameter=[[recharge-threshold]],[[recharge-amount]],[[payment-password]] --key=[[eai-sess]]
+```
+例如，`--recharge-parameter=50,50,pasSwoddd` 代表校园卡余额不高于 50CNY 时，会自动充值 50CNY 到卡内，最后一项为在线支付密码。
+
+### 记录房间电量
+
+``` shell
+python electricity/elec-monitor.py --room=[[area-id]],[[build-id]],[[room-id]] --key=[[eai-sess]]
 ```
 
-其中，`area-id`、`build_id`、`room_id` 可以在缴费页链接中提取，`eai-sess` 可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到。
+例如 `--room=02,xl01,A101`。电量成功获取后会记录到 `data.csv` 中。
 
-例如，`area-id` 为 `02`（仙林校区），`build_id` 为 `xl01`，`room_id` 为 `A101`，则该参数为 `--room=02,xl01,A101`。
-
-电量成功获取后会记录到 `data.csv` 中。
-
-### 展示电量
+### 展示房间电量
 
 ```shell
 python electricity/elec-graph.py
 ```
 
-### GitHub Actions
-
-借助 GitHub Actions 可以自动化记录电量，并通过 Pull Request 更新至 electricity/data.csv。设置的运行频率为每十分钟一次，但实际运行频率可能会更低；亦可在 Action 界面手动执行。
-
-需要先在 Repo 设置中添加两个 Secrets：`ELEC_ROOM` 和 `EAISESS`，分别对应两个输入参数。如 `ELEC_ROOM` 为 `02,xl06,1014`，`EAISESS` 为 `gks2bdj093zfidj91cidkofkw6`。
-
 ## TO-DO
 - [ ] 使用账号和密码自动登录信息门户
-- [ ] 自动充值（校园卡/电费/网费）
+- [ ] 自动充值
+  - [x] 校园卡
+  - [ ] 电费
+  - [ ] 网费
 - [ ] 图书自动续借
 - [ ] 基于 Telegram / 邮件 的消息提醒
   - [ ] 低余额 / 充值成功信息
