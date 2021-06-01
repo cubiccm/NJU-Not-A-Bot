@@ -28,7 +28,7 @@ jobs:
           TZ: "Asia/Hong_Kong"
         run: python3 electricity/elec-monitor.py --room=${{ secrets.ELEC_ROOM }} --key=${{ secrets.EAISESS }}
       
-      - name: Check campus card
+      - name: Recharge campus card & Internet account
         env:
           TZ: "Asia/Hong_Kong"
         run: _TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }} _TG_CHAT_ID=${{ secrets.TG_CHAT_ID }} python3 balance/balance.py --recharge-parameter=${{ secrets.CARD_RECHARGE }} --key=${{ secrets.EAISESS }} 

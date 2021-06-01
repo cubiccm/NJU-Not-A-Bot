@@ -14,9 +14,9 @@
 
 几乎所有操作都需要设定 `EAISESS`，未设定该项时 GitHub Actions 将会执行失败。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到，如 `gks2bdj093zfidj91cidkofkw6`。
 
-### 校园卡充值
+### 校园卡及网费充值
 
-如需校园卡自动充值，还需要设定 `CARD_RECHARGE` 充值参数为 `[[recharge-threshold]],[[recharge-amount]],[[payment-password]]`。
+如需校园卡自动充值，还需要设定 `CARD_RECHARGE` 充值参数为 `[[recharge-threshold]],[[recharge-amount]],[[payment-password]]`。设定该参数后，亦会在网费低于 20CNY 时自动从银行卡充值 10CNY。
 
 其中，`recharge-threshold` 为最小充值阈值，即当校园卡余额小于等于这个阈值时，才会执行充值操作。`recharge-amount` 为充值金额，由于信息门户限制，可能只能充值整数金额。`payment-password` 为在线支付密码，即信息门户充值操作所需要的密码。充值操作会从信息门户绑定银行卡中扣除金额。这三个参数以逗号分隔。
 
@@ -42,6 +42,8 @@
 
 注意，账号ID不是注册用户名或注册手机号，而是一个唯一数字ID。可以和 [Chat ID Echo](https://t.me/chatid_echo_bot) 对话或和自己的机器人对话以获取这个ID。
 
+正确设置参数后，充值信息将通过设定的机器人发送至设定的主账号。
+
 ## 本地执行用法
 
 ### 环境
@@ -58,12 +60,13 @@ pip install -r requirements.txt
 
 几乎所有需要访问账号信息的操作都需要指定 `eai-sess` 参数。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到。
 
-### 校园卡充值
+### 校园卡及网费充值
 
 ``` shell
 python balance/balance.py --recharge-parameter=[[recharge-threshold]],[[recharge-amount]],[[payment-password]] --key=[[eai-sess]]
 ```
-例如，`--recharge-parameter=50,50,pasSwoddd` 代表校园卡余额不高于 50CNY 时，会自动充值 50CNY 到卡内，最后一项为在线支付密码。
+例如，`--recharge-parameter=50,50,pasSwoddd` 代表校园卡余额不高于 50CNY 时，会自动充值 50CNY 到卡内，最后一项为在线支付密码。若网费余额小于等于 20CNY，将从银行卡自动
+充值 10CNY 网费。
 
 ### 记录房间电量
 
