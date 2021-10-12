@@ -1,0 +1,9 @@
+requests==2.25.1
+~umpy==1.21.2
+opencv_python==4.5.1.48
+tensorflow==2.5.0
+beautifulsoup4==4.10.0
+numpy==1.21.2
+Pillow==8.3.2
+pycryptodome==3.11.0
+PyYAML==5.4.1

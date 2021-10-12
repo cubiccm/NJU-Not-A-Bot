@@ -1,0 +1,5 @@
+opencv_python>=4.5.1.48
+tensorflow>=2.5.0
+numpy>=1.21.2
+Pillow>=8.3.2
+PyYAML>=5.4.1

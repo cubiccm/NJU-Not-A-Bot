@@ -20,7 +20,8 @@ if args.room:
   except:
     raise Exception("Cannot parse room argument")
 else:
-  raise Exception("Room argument required")
+  print("No room specified")
+  exit()
 
 if args.key:
   cookies = {
@@ -33,7 +34,7 @@ url = "https://wx.nju.edu.cn/njucharge/wap/electric/charge"
 r = requests.get(url = url, params = url_params, cookies = cookies)
 res = re.findall("dianyue:\"([-0-9.]+)\"", r.text)
 if len(res):
-  print(res[0])
+  print("Electricity remaining:", res[0])
   with open("electricity/data.csv", "a") as f:
     csv.writer(f).writerow([datetime.datetime.now(), res[0]])
 else:

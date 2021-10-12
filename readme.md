@@ -6,13 +6,15 @@
 
 ## 借助 GitHub Actions 实现自动化
 
-借助 GitHub Actions 可以为校园卡自动充值、自动化记录电量并更新至 `electricity/data.csv`。设置的运行频率为每十分钟一次，但实际运行频率可能会更低；亦可在 Action 界面手动执行。
+借助 GitHub Actions 可以为校园卡自动充值、自动化记录电量并更新至 `electricity/data.csv`。设置的运行频率为每 12 分钟一次，但实际运行频率可能会更低；亦可在 Action 界面手动执行。
 
 在执行 Actions 前需要先在 Repo 设定中设置执行参数。在 Repo 的 `Settings -> Secrets` 中添加 Repository Secrets，并按下方说明设置名称和值即可。
 
-### EAI-SESS 参数
+### 账号登录参数
 
-几乎所有操作都需要设定 `EAISESS`，未设定该项时 GitHub Actions 将会执行失败。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到，如 `gks2bdj093zfidj91cidkofkw6`。
+设置 `NJU_USERNAME`（学号/统一认证登录用户名）和 `NJU_PASSWORD`（统一认证密码）后才可以正常执行 Workflow。由于在 GitHub Actions 中环境设置较缓慢，暂时没有启用验证码识别功能。
+
+如果你知道如何获得 Cookies 值，可以设定 `EAISESS` 参数来更快地执行 Workflow。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到，如 `gks2bdj093zfidj91cidkofkw6`。设定后，无需再设置 `NJU_USERNAME` 和 `NJU_PASSWORD`。
 
 ### 校园卡及网费充值
 
@@ -36,7 +38,7 @@
 
 ### 连接 Telegram
 
-需要设置 `TG_BOT_TOKEN` 和 `TG_CHAT_ID` 两项参数。连接 Telegram 后，将可自动发消息到指定的 Telegram 账号。
+连接 Telegram 后，将可自动发消息到指定的 Telegram 账号；需要设置 `TG_BOT_TOKEN` 和 `TG_CHAT_ID` 两项参数。
 
 要在 Telegram 接收信息，需要拥有 Telegram 账号并在 [BotFather](https://t.me/botfather) 处注册一个 [Bot](https://core.telegram.org/bots)。这个机器人将用于向 Telegram 账号发送信息。之后，将获得的 Bot token 填入 Repo 参数 `TG_BOT_TOKEN`，并将你的（需要接收消息的）账号ID填入 `TG_CHAT_ID`。
 
@@ -54,11 +56,21 @@
 pip install -r requirements.txt
 ```
 
-以安装必要的依赖环境。
+以安装必要的依赖环境。如需验证码识别功能，需要再执行
+
+```shell
+pip install -r foundation/muggle_ocr/requirements.txt
+```
 
 ### EAI-SESS 参数
 
-几乎所有需要访问账号信息的操作都需要指定 `eai-sess` 参数。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到。
+在本地环境中，需要访问账号信息的操作都需要指定 `eai-sess` 参数。这一参数可以在 [i南大信息门户](https://wx.nju.edu.cn/homepage/wap/default/home) 网页的 Cookies 中找到。亦可以使用
+
+```shell
+python foundation/login.py -u [[NJU_USERNAME]] -p [[NJU_PASSWORD]]
+```
+
+获取。
 
 ### 校园卡及网费充值
 
@@ -86,11 +98,11 @@ python electricity/elec-graph.py
 设置环境变量：`_TG_BOT_TOKEN` 及 `_TG_CHAT_ID` 即可自动发消息至 Telegram。
 
 ## TO-DO
-- [ ] 使用账号和密码自动登录信息门户
+- [x] 使用账号和密码自动登录信息门户
 - [ ] 自动充值
   - [x] 校园卡
   - [ ] 电费
-  - [ ] 网费
+  - [x] 网费
 - [ ] 图书自动续借
 - [ ] 基于 Telegram / 邮件 的消息提醒
   - [x] 充值成功信息
