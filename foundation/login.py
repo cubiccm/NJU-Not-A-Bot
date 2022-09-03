@@ -28,7 +28,7 @@ else:
   captcha_fill = not args.github
 
   access_url = "https://wx.nju.edu.cn/homepage/wap/default/home"
-  login_url = "https://authserver.nju.edu.cn/authserver/login?service=https%3A%2F%2Fwx.nju.edu.cn%2Fa_nju%2Fapi%2Fsso%2Findex%3Fredirect%3Dhttps%253A%252F%252Fwx.nju.edu.cn%252Fhomepage%252Fwap%252Fdefault%252Fhome%26from%3Dwap"
+  login_url = "https://authserver.nju.edu.cn/authserver/login?service=https%3A%2F%2Fwx.nju.edu.cn%2Fa_nju%2Fapi%2Fsso%2Findex%3Fredirect%3Dhttps%253A%252F%252Fwx.nju.edu.cn%252Fhomepage%252Fwap%252Fdefault%252Fhome%26from%3Dwap&login_type=mobileLogin"
 
   # Reference: https://github.com/forewing/nju-health-checkin/blob/master/checkin.py
   def encryptAES(data, key):
@@ -47,11 +47,15 @@ else:
   r = s.get(access_url)
   try:
     soup = BeautifulSoup(r.text, 'html.parser')
+    salt_start = r.text.index("pwdDefaultEncryptSalt") + len("pwdDefaultEncryptSalt") + 4
+    salt_end = r.text.index("\";", salt_start)
+    salt = r.text[salt_start : salt_end]
+
     data = {
       'username': username,
-      'password': encryptAES(password, getInput(soup, id="pwdDefaultEncryptSalt")),
+      'password': encryptAES(password, salt),
       'lt': getInput(soup, name="lt"),
-      'dllt': "userNamePasswordLogin",
+      'dllt': "mobileLogin",
       'execution': getInput(soup, name="execution"),
       '_eventId': getInput(soup, name="_eventId"),
       'rmShown': getInput(soup, name="rmShown"),
